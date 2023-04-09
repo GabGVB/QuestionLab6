@@ -3,21 +3,32 @@
 typedef struct
 {
     int lenPath;
-    char path[10];
+    char *path;
 } PathsForEach;
 
 struct Answers
 {
     int nrCai;
+    int Type;
     PathsForEach caiTo[5];
 } C[5];
-
+int nrAns;
 void SaveIn (char *v,int lenPath, int AnswerType)
 {
-    C[AnswerType].nrCai++;
-    C[AnswerType].caiTo[C[AnswerType].nrCai].lenPath=lenPath;
-    for(int i=0; i<lenPath; i++)
-        C[AnswerType].caiTo[C[AnswerType].nrCai].path[i]=v[i];
+    int i=0,j;
+    while (i<nrAns && C[i].Type!=AnswerType)
+        i++;
+    if (i==nrAns)
+    {
+        nrAns++;
+        C[i].Type=AnswerType;
+    }
+    C[i].caiTo[C[i].nrCai].path=(char*)malloc(lenPath*sizeof(char));
+    C[i].caiTo[C[i].nrCai].lenPath=lenPath;
+
+    for (j=0; j<lenPath; j++)
+        C[i].caiTo[C[i].nrCai].path[j]=v[j];
+        C[i].nrCai++;
 }
 void FindPathFor(Node *root,char *v, char c,int n)
 {
@@ -46,14 +57,15 @@ int main()
     root=createTree(root);
     //FindPath(root,v,'0',0);
     FindPathFor(root,v,'0',0);
-    for (i=1; i<=4; i++)
+    for (i=0; i<nrAns; i++)
     {
 
-        printf ("C%d: %d ",i,C[i].nrCai);
+        printf ("C%d: %d ",C[i].Type,C[i].nrCai);
         (C[i].nrCai==1)?(printf ("cale\n")):(printf("cai\n"));
-        for (j=1; j<=C[i].nrCai; j++)
+
+        for (j=0; j<C[i].nrCai; j++)
         {
-            for (k=0; k<=C[i].caiTo[j].lenPath; k++)
+            for (k=0; k<C[i].caiTo[j].lenPath; k++)
                 printf("%c ",C[i].caiTo[j].path[k]);
             printf("\n");
         }
